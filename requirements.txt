@@ -1,0 +1,7 @@
+python-telegram-bot>=21.6
+google-genai>=1.0.0
+openai>=1.50.0
+python-dotenv>=1.0.1
+fastapi>=0.115
+uvicorn>=0.30
+python-multipart>=0.0.9

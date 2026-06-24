@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: acumen-lighting-studio
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: IMAGE_PROVIDER
+        value: openai
+      - key: STUDIO_USER
+        value: acumen          # the login username
+      - key: STUDIO_PASSWORD
+        sync: false            # set the login password (secret) in the dashboard
+      - key: GEMINI_API_KEY
+        sync: false            # set this secret in the Render dashboard
+      - key: OPENAI_API_KEY
+        sync: false            # optional — only needed for one-click Auto render
