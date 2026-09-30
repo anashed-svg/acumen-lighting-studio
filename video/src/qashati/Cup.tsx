@@ -9,14 +9,15 @@ import {Toppings} from './Toppings';
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 const {cx, rimY, bottomY} = CUP;
 
-// Inner cup outline, extended straight up so pieces falling in from above aren't clipped.
+// Inner cup outline, extended up to just under the text (TEXT_BOTTOM) so falling pieces never cross the titles.
+const TEXT_BOTTOM = 485;
 const interior = (inset = 8) => {
   const tl = cx - cupHalfWidth(rimY) + inset;
   const tr = cx + cupHalfWidth(rimY) - inset;
   const bl = cx - cupHalfWidth(bottomY) + inset;
   const br = cx + cupHalfWidth(bottomY) - inset;
   const b = bottomY - inset;
-  return `M${tl} 0 L${tl} ${rimY} L${bl} ${b - 28} Q${bl} ${b} ${bl + 28} ${b} L${br - 28} ${b} Q${br} ${b} ${br} ${b - 28} L${tr} ${rimY} L${tr} 0 Z`;
+  return `M${tl} ${TEXT_BOTTOM} L${tl} ${rimY} L${bl} ${b - 28} Q${bl} ${b} ${bl + 28} ${b} L${br - 28} ${b} Q${br} ${b} ${br} ${b - 28} L${tr} ${rimY} L${tr} ${TEXT_BOTTOM} Z`;
 };
 const body = () => {
   const tl = cx - cupHalfWidth(rimY);
@@ -154,6 +155,9 @@ export const Cup: React.FC = () => {
         <clipPath id="q-interior">
           <path d={interior()} />
         </clipPath>
+        <clipPath id="q-below-text">
+          <rect x={0} y={TEXT_BOTTOM} width={1080} height={1920} />
+        </clipPath>
         <linearGradient id="q-cream" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#FFFFFF" />
           <stop offset="0.6" stopColor={C.cream} />
@@ -256,7 +260,7 @@ export const Cup: React.FC = () => {
         </g>
 
         {/* 6. honey + 7. nuts (the classic cup), replaced by the toppings carousel */}
-        <g opacity={baseOut}>
+        <g opacity={baseOut} clipPath="url(#q-below-text)">
           {honey > 0 ? (
             <g>
               <path d={HONEY} fill="none" stroke="#C97A06" strokeWidth={20} strokeLinecap="round" strokeDasharray={honeyPath.strokeDasharray} strokeDashoffset={honeyPath.strokeDashoffset} />
@@ -280,7 +284,9 @@ export const Cup: React.FC = () => {
             </Falling>
           ))}
         </g>
-        <Toppings domeY={domeY} domeHalf={domeHalf} />
+        <g clipPath="url(#q-below-text)">
+          <Toppings domeY={domeY} domeHalf={domeHalf} />
+        </g>
 
         {/* Front of the cup: rim, glass highlights, outline */}
         <path d={body()} fill="url(#q-glass)" />
