@@ -72,7 +72,7 @@
 python3 video/src/qashati/audio/make_score.py        # الموسيقى (لو غيّرت التوقيتات)
 cd video && npx remotion render src/qashati/index.ts QashatiLayers out/qashati/render.mp4 --crf=16
 # نسخة التسليم: ألوان بمدى الفيديو القياسي (yuv420p/bt709) + faststart للرفع عالمنصات
-ffmpeg -i out/qashati/render.mp4 -vf "scale=in_range=full:out_range=tv,format=yuv420p" -c:v libx264 -preset slow -crf 18 \
+ffmpeg -i out/qashati/render.mp4 -vf "scale=in_range=pc:in_color_matrix=bt601:out_range=tv:out_color_matrix=bt709,format=yuv420p" -c:v libx264 -preset slow -crf 18 \
   -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 -movflags +faststart -c:a copy out/qashati/qashati-layers-9x16.mp4
 ```
 - **الغلاف (Cover):** استعملوا فريم الذروة (7.7 ث) — الكاسة كاملة مع العنوان: `out/qashati/qashati-layers-cover.jpg`.
