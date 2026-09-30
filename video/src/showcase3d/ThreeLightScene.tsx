@@ -13,6 +13,7 @@ export const threeLightSceneSchema = brandSchema.extend({
   stone: zColor(),
   render: zColor(),
   lightPower: z.number().min(0).max(3),
+  showLockup: z.boolean().describe('Logo + tagline at the end; off when used as a scene in a longer film'),
 });
 type Props = z.infer<typeof threeLightSceneSchema>;
 
@@ -21,6 +22,7 @@ export const threeLightSceneDefaults: Props = {
   stone: '#b3a590',
   render: '#d9d4cc',
   lightPower: 1,
+  showLockup: true,
 };
 
 type Vec3 = [number, number, number];
@@ -132,9 +134,11 @@ export const ThreeLightScene: React.FC<Props> = (props) => {
         ))}
       </ThreeCanvas>
       <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.8) 100%)'}} />
-      <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: height * 0.06}}>
-        <Lockup brand={props} t={ramp(t, 2.3, 3.6, (x) => x)} logoSize={88} />
-      </AbsoluteFill>
+      {props.showLockup ? (
+        <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: height * 0.06}}>
+          <Lockup brand={props} t={ramp(t, 2.3, 3.6, (x) => x)} logoSize={88} />
+        </AbsoluteFill>
+      ) : null}
       <AbsoluteFill
         style={{backgroundColor: '#000', opacity: interpolate(frame, [0, 10], [1, 0], {extrapolateRight: 'clamp'})}}
       />
