@@ -4,3 +4,5 @@ __pycache__/
 *.pyc
 video/node_modules/
 video/out/
+motion/**/out/
+motion/**/node_modules/

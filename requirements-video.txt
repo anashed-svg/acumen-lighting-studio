@@ -23,6 +23,18 @@ google-genai>=1.30          # Veo video + Gemini / Nano Banana images
 replicate>=1.0              # Kling, Luma, Runway, Flux ... via Replicate
 fal-client>=0.5             # same models via fal.ai
 
+# Motion graphics (code-driven)
+manim>=0.19                 # 2D motion graphics / explainers (Cairo + Pango, Arabic OK)
+pycairo>=1.26
+skia-python>=87.6           # Skia 2D canvas / shaders from Python
+lottie[all]>=0.7            # python-lottie: build / convert Lottie <-> SVG, GIF, MP4
+cairosvg>=2.7
+drawsvg>=2.4
+svgpathtools>=1.6           # SVG path math (lengths, points along a path)
+fonttools>=4.50             # font inspection / text -> outlines
+opensimplex>=0.4            # smooth noise for organic motion
+easing-functions>=1.0
+
 # Utilities
 yt-dlp>=2025.1              # grab reference / moodboard clips
 python-dotenv>=1.0.1
