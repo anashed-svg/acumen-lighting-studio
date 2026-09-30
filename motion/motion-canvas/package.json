@@ -1,0 +1,23 @@
+{
+  "name": "acumen-motion-canvas",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "VITE_CJS_IGNORE_WARNING=true vite",
+    "build": "tsc && VITE_CJS_IGNORE_WARNING=true vite build",
+    "render": "node render.mjs",
+    "smoke": "bash smoke.sh"
+  },
+  "dependencies": {
+    "@motion-canvas/2d": "^3.17.2",
+    "@motion-canvas/core": "^3.17.2",
+    "@motion-canvas/ffmpeg": "^3.17.2"
+  },
+  "devDependencies": {
+    "@motion-canvas/ui": "^3.17.2",
+    "@motion-canvas/vite-plugin": "^3.17.2",
+    "playwright-core": "1.56.1",
+    "typescript": "^5.8.3",
+    "vite": "^5.4.21"
+  }
+}

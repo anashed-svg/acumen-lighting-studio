@@ -1,0 +1,19 @@
+{
+  "logo_svg": "../../../video/public/logo-white.svg",
+  "background": "#07090C",
+  "ink": "#EEF3F8",
+  "glow": "#9CCBFF",
+  "light_kelvin": 6000,
+  "white_balance_kelvin": 4500,
+  "sky_zenith": "#010306",
+  "sky_horizon": "#0A1726",
+  "logo_style": "emissive",
+  "logo_metal": "#2A2F36",
+  "font_latin": "Montserrat Light",
+  "font_latin_weight": 300,
+  "font_arabic": "IBM Plex Sans Arabic",
+  "font_arabic_weight": 300,
+  "tracking_em": 0.3,
+  "tagline_en": "YOUR TAGLINE HERE",
+  "tagline_ar": "شعارك هنا"
+}

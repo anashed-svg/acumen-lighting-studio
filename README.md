@@ -91,4 +91,6 @@
 | `prompt.py` | برومبت الإضاءة (عدّل عليه للتحكم بالشكل) |
 | `.env` | المفاتيح (تعمله إنت من `.env.example`) |
 | `video/` | استوديو الفيديو (Remotion) — شوف `video/README.md` |
-| `scripts/setup-video-tools.sh` | تنزيل كل أدوات الفيديو بأمر واحد |
+| `motion/` | كل أدوات الموشن غرافيك (Blender، Manim، Motion Canvas، Revideo، Lottie، Synfig، ffmpeg/MLT) — الفهرس: `motion/README.md` |
+| `scripts/setup-video-tools.sh` | تنزيل كل أدوات الفيديو والموشن بأمر واحد |
+| `scripts/smoke-all.sh` | رندر كل العينات من الصفر للتأكد إنو كل شي شغّال |

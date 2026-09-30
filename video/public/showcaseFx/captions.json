@@ -1,0 +1,13 @@
+[
+  {"text": "Light", "startMs": 0, "endMs": 380, "timestampMs": 190, "confidence": null},
+  {"text": " shapes", "startMs": 380, "endMs": 760, "timestampMs": 570, "confidence": null},
+  {"text": " the", "startMs": 760, "endMs": 920, "timestampMs": 840, "confidence": null},
+  {"text": " night.", "startMs": 920, "endMs": 1300, "timestampMs": 1110, "confidence": null},
+  {"text": " الضوء", "startMs": 1400, "endMs": 1820, "timestampMs": 1610, "confidence": null},
+  {"text": " يصنع", "startMs": 1820, "endMs": 2200, "timestampMs": 2010, "confidence": null},
+  {"text": " الأجواء", "startMs": 2200, "endMs": 2700, "timestampMs": 2450, "confidence": null},
+  {"text": " إضاءة", "startMs": 2800, "endMs": 3150, "timestampMs": 2975, "confidence": null},
+  {"text": " معمارية", "startMs": 3150, "endMs": 3500, "timestampMs": 3325, "confidence": null},
+  {"text": " من", "startMs": 3500, "endMs": 3620, "timestampMs": 3560, "confidence": null},
+  {"text": " ACUMEN", "startMs": 3620, "endMs": 3900, "timestampMs": 3760, "confidence": null}
+]

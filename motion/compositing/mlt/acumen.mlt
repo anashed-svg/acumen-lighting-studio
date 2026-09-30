@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Acumen MLT timeline (4 s @ 30 fps): night facade with a Ken Burns push + frei0r softglow
+     dissolves into a logo card with bilingual Pango titles; frei0r vignette over everything.
+     Paths are relative to this file. Render headless: ../mlt.sh (or melt acumen.mlt -consumer avformat:...).
+     MLT is the engine inside Kdenlive and Shotcut: their .kdenlive / .mlt projects render the same way. -->
+<mlt LC_NUMERIC="C" version="7.22.0" title="Acumen dissolve" producer="main">
+  <profile description="HD 720p 30 fps" width="1280" height="720" progressive="1"
+           sample_aspect_num="1" sample_aspect_den="1" display_aspect_num="16" display_aspect_den="9"
+           frame_rate_num="30" frame_rate_den="1" colorspace="709"/>
+
+  <!-- clip 1: still plate, slow push-in (affine rect keyframes) + highlight glow -->
+  <producer id="facade" in="0" out="74">
+    <property name="mlt_service">pixbuf</property>
+    <property name="resource">../out/samples/facade.png</property>
+    <property name="length">75</property>
+    <filter mlt_service="affine">
+      <property name="transition.rect">0=0 0 1280 720 1;74~=-96 -54 1472 828 1</property>
+      <property name="transition.fill">1</property>
+      <property name="transition.distort">0</property>
+    </filter>
+    <filter mlt_service="frei0r.softglow">
+      <property name="0">0.35</property>
+      <property name="1">0.45</property>
+      <property name="2">0.9</property>
+      <property name="3">0</property>
+    </filter>
+  </producer>
+
+  <!-- clip 2: logo card = brand background + logo + bilingual title -->
+  <producer id="bg" in="0" out="64">
+    <property name="mlt_service">colour</property>
+    <property name="resource">#050505</property>
+    <property name="length">65</property>
+  </producer>
+  <producer id="logo" in="0" out="64">
+    <property name="mlt_service">pixbuf</property>
+    <property name="resource">../../../video/public/logo-white.png</property>
+    <property name="length">65</property>
+  </producer>
+  <producer id="title" in="0" out="64">
+    <property name="mlt_service">pango</property>
+    <!-- Google's static Poppins registers weight 200 as family "Poppins ExtraLight"; plain
+         "Poppins ExtraLight 19" parses as Poppins + weight and silently falls back to Regular. -->
+    <property name="markup"><![CDATA[<span font_desc="Poppins ExtraLight,Poppins Ultra-Light 19" letter_spacing="7400">CRAFTING THE ATMOSPHERE</span>
+<span font_desc="Noto Kufi Arabic Light 22">نصنع الأجواء</span>]]></property>
+    <property name="fgcolour">#F4F1EA</property>
+    <property name="bgcolour">#00000000</property>
+    <property name="align">centre</property>
+    <property name="line_spacing">14</property>
+    <property name="length">65</property>
+  </producer>
+  <tractor id="card" in="0" out="64">
+    <multitrack>
+      <track producer="bg"/>
+      <track producer="logo"/>
+      <track producer="title"/>
+    </multitrack>
+    <transition mlt_service="affine" in="0" out="64">
+      <property name="a_track">0</property>
+      <property name="b_track">1</property>
+      <property name="rect">0=530 180 220 220 0;24=505 155 270 270 1;64=495 145 290 290 1</property>
+      <property name="distort">0</property>
+      <property name="fill">1</property>
+    </transition>
+    <transition mlt_service="affine" in="0" out="64">
+      <property name="a_track">0</property>
+      <property name="b_track">2</property>
+      <property name="rect">0=0 480 1280 160 0;14=0 480 1280 160 0;40=0 470 1280 160 1</property>
+      <property name="halign">centre</property>
+      <property name="valign">top</property>
+      <property name="distort">0</property>
+      <property name="fill">0</property>
+    </transition>
+  </tractor>
+
+  <playlist id="v1">
+    <entry producer="facade" in="0" out="74"/>
+  </playlist>
+  <playlist id="v2">
+    <blank length="55"/>
+    <entry producer="card" in="0" out="64"/>
+  </playlist>
+
+  <tractor id="main" in="0" out="119">
+    <multitrack>
+      <track producer="v1"/>
+      <track producer="v2"/>
+    </multitrack>
+    <!-- dissolve: a luma transition without a wipe image is a plain cross-fade -->
+    <transition mlt_service="luma" in="55" out="74">
+      <property name="a_track">0</property>
+      <property name="b_track">1</property>
+    </transition>
+    <filter mlt_service="frei0r.vignette">
+      <property name="0">0.5</property>
+      <property name="1">0.15</property>
+      <property name="2">0.55</property>
+    </filter>
+  </tractor>
+</mlt>

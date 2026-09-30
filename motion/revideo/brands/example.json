@@ -1,0 +1,13 @@
+{
+  "logo": "/logo-white.png",
+  "logoSize": 260,
+  "background": "#03060A",
+  "ink": "#EEF4FA",
+  "muted": "#7F8C99",
+  "glow": "#9FD4FF",
+  "fontLatin": "/fonts/Poppins-Light.ttf",
+  "fontArabic": "/fonts/Cairo-Light.ttf",
+  "tracking": 0.32,
+  "taglineEn": "LIGHT, REIMAGINED",
+  "taglineAr": "الضوء بشكل جديد"
+}

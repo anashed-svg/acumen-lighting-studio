@@ -6,6 +6,8 @@
 bash scripts/setup-video-tools.sh
 ```
 
+> الفهرس الكامل لأدوات الموشن غرافيك (Blender، Manim، Motion Canvas، Lottie…): [`motion/README.md`](../motion/README.md)
+
 ## شو في بالعدّة
 
 | الأداة | لشو |
@@ -29,6 +31,14 @@ npm run studio                                             # معاينة وتع
 npx remotion render AcumenIntro out/intro.mp4              # 16:9
 npx remotion render AcumenIntroVertical out/intro-9x16.mp4 # 9:16 ريلز/تيك توك
 ```
+
+كل التركيبات مسجّلة بـ `src/Root.tsx` وبتبيّن بالـ Studio. القوالب مقسّمة بمجلدات، لكل واحد README و smoke test:
+
+| المجلد | التركيبات | الفحص |
+|---|---|---|
+| [`src/showcase2d`](src/showcase2d/README.md) | `LogoDraw`، `KineticType`، `TransitionsReel` (+ نسخ 9:16) | `bash smoke/showcase2d.sh` |
+| [`src/showcase3d`](src/showcase3d/README.md) | `ThreeLightScene`، `LottieShowcase`، `TheatreKeyframes`، `RiveDemo`، `Svg3DLogo` | `bash smoke/showcase3d.sh` |
+| [`src/showcaseFx`](src/showcaseFx/README.md) | `SkiaLightShader`، `BrandLowerThird`، `SocialCaptions` | `bash smoke/showcaseFx.sh` |
 
 - الأصول (لوغو، خطوط، فوتج، موسيقى) بمجلد `public/`، وبنستدعيها بـ `staticFile()`.
 - الخطوط محلية بـ `public/fonts` (رخصة SIL OFL) عشان الرندر ما يعتمد على النت.

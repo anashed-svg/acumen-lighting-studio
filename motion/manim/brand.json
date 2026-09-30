@@ -1,0 +1,19 @@
+{
+  "logo_svg": "../../video/public/logo-white.svg",
+  "background": "#050505",
+  "ink": "#F4F1EA",
+  "muted": "#8C8882",
+  "glow": "#FFC478",
+  "font_latin": "Poppins Light",
+  "font_arabic": "Noto Kufi Arabic",
+  "font_weight": "LIGHT",
+  "tracking_em": 0.38,
+  "tagline_en": "CRAFTING THE ATMOSPHERE",
+  "tagline_ar": "نصنع الأجواء",
+  "beam_title_en": "BEAM ANGLE",
+  "beam_title_ar": "زاوية الشعاع",
+  "beam_from_deg": 15,
+  "beam_to_deg": 60,
+  "beam_narrow_en": "SPOT",
+  "beam_wide_en": "FLOOD"
+}

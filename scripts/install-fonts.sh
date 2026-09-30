@@ -2,6 +2,11 @@
 # Installs a curated set of open-license (SIL OFL) Google Fonts system-wide, so
 # Remotion/Chromium, Blender, Manim, Inkscape and ffmpeg can all use them by name.
 # Usage:  bash scripts/install-fonts.sh
+#
+# Note: these static files register some weights as their own family, e.g. "Poppins Light",
+# "Poppins ExtraLight", "Tajawal Light". In fontconfig tools (Manim/Pango, Blender, Synfig,
+# Inkscape, ImageMagick, MLT) ask for the full name "Poppins Light", not "Poppins" + weight 300,
+# or you silently get Regular. Check with:  fc-match "Poppins Light"
 set -uo pipefail
 
 DEST="${FONT_DIR:-/usr/local/share/fonts/google}"

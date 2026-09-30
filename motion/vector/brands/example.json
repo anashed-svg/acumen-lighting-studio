@@ -1,0 +1,16 @@
+{
+  "name": "Example",
+  "logo_svg": "../assets/sample-client-logo.svg",
+  "logo_draw_order": "ltr",
+  "background": "#07090C",
+  "ink": "#EEF3F8",
+  "muted": "#7D8894",
+  "glow": "#9CCBFF",
+  "font_latin": "Montserrat",
+  "font_latin_weight": 300,
+  "font_arabic": "IBM Plex Sans Arabic",
+  "font_arabic_weight": 300,
+  "tracking_em": 0.3,
+  "tagline_en": "YOUR TAGLINE HERE",
+  "tagline_ar": "شعارك هنا"
+}

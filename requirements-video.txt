@@ -34,6 +34,22 @@ svgpathtools>=1.6           # SVG path math (lengths, points along a path)
 fonttools>=4.50             # font inspection / text -> outlines
 opensimplex>=0.4            # smooth noise for organic motion
 easing-functions>=1.0
+uharfbuzz>=0.40             # shape Arabic into glyph outlines (Lottie / SVG / Blender text)
+vtracer>=0.6                # colour raster logo -> SVG (potrace is mono only)
+rlottie-python>=1.3         # fast CPU Lottie renderer (thumbnails, second opinion)
+
+# 3D / colour / finishing
+pyoidn==2.5.0.1             # Intel Open Image Denoise for Cycles frames (apt Blender lacks OIDN)
+colour-science>=0.4         # colour maths, build .cube LUTs
+opencolorio>=2.3            # ACES / AgX colour management (built-in configs)
+OpenImageIO>=2.5            # EXR / multilayer comps outside Blender
+OpenEXR>=3.2
+opentimelineio>=0.17        # hand timelines to Premiere / Resolve / FCP editors
+
+# Audio for motion (beat sync, sound design, subtitles)
+librosa>=0.10               # beats, onsets, tempo -> JSON cue lists
+pedalboard>=0.9             # reverb / compressor / limiter for SFX and music beds
+pysubs2>=1.7                # styled ASS / SRT / VTT subtitles (burn in with ffmpeg libass)
 
 # Utilities
 yt-dlp>=2025.1              # grab reference / moodboard clips

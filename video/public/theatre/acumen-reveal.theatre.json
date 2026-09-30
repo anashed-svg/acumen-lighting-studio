@@ -1,0 +1,400 @@
+{
+  "sheetsById": {
+    "Reveal": {
+      "staticOverrides": {
+        "byObject": {}
+      },
+      "sequence": {
+        "type": "PositionalSequence",
+        "length": 4,
+        "subUnitsPerUnit": 30,
+        "tracksByObject": {
+          "Sweep": {
+            "trackIdByPropPath": {
+              "[\"x\"]": "sweep-x",
+              "[\"intensity\"]": "sweep-intensity",
+              "[\"warmth\"]": "sweep-warmth"
+            },
+            "trackData": {
+              "sweep-x": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Sweep:[\"x\"]",
+                "keyframes": [
+                  {
+                    "id": "sweep-x-0",
+                    "position": 0.1,
+                    "value": -0.25,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.16,
+                      1
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "sweep-x-1",
+                    "position": 0.9,
+                    "value": 0.33,
+                    "handles": [
+                      0.3,
+                      1,
+                      0.33,
+                      0.33
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "sweep-x-2",
+                    "position": 2.0,
+                    "value": 0.67,
+                    "handles": [
+                      0.67,
+                      0.67,
+                      0.7,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "sweep-x-3",
+                    "position": 2.6,
+                    "value": 1.3,
+                    "handles": [
+                      1,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": false,
+                    "type": "bezier"
+                  }
+                ]
+              },
+              "sweep-intensity": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Sweep:[\"intensity\"]",
+                "keyframes": [
+                  {
+                    "id": "sweep-intensity-0",
+                    "position": 0.1,
+                    "value": 0,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.16,
+                      1
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "sweep-intensity-1",
+                    "position": 0.5,
+                    "value": 1,
+                    "handles": [
+                      0.3,
+                      1,
+                      0.65,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "sweep-intensity-2",
+                    "position": 2.1,
+                    "value": 1,
+                    "handles": [
+                      0.35,
+                      1,
+                      0.65,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "sweep-intensity-3",
+                    "position": 2.7,
+                    "value": 0,
+                    "handles": [
+                      0.35,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": false,
+                    "type": "bezier"
+                  }
+                ]
+              },
+              "sweep-warmth": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Sweep:[\"warmth\"]",
+                "keyframes": [
+                  {
+                    "id": "sweep-warmth-0",
+                    "position": 0.3,
+                    "value": 0,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.65,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "sweep-warmth-1",
+                    "position": 2.0,
+                    "value": 1,
+                    "handles": [
+                      0.35,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": false,
+                    "type": "bezier"
+                  }
+                ]
+              }
+            }
+          },
+          "Logo": {
+            "trackIdByPropPath": {
+              "[\"glow\"]": "logo-glow",
+              "[\"scale\"]": "logo-scale"
+            },
+            "trackData": {
+              "logo-glow": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Logo:[\"glow\"]",
+                "keyframes": [
+                  {
+                    "id": "logo-glow-0",
+                    "position": 1.3,
+                    "value": 0,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.16,
+                      1
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "logo-glow-1",
+                    "position": 2.4,
+                    "value": 1,
+                    "handles": [
+                      0.3,
+                      1,
+                      0.65,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "logo-glow-2",
+                    "position": 3.9,
+                    "value": 0.45,
+                    "handles": [
+                      0.35,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": false,
+                    "type": "bezier"
+                  }
+                ]
+              },
+              "logo-scale": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Logo:[\"scale\"]",
+                "keyframes": [
+                  {
+                    "id": "logo-scale-0",
+                    "position": 0.3,
+                    "value": 0.94,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.16,
+                      1
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "logo-scale-1",
+                    "position": 3.9,
+                    "value": 1,
+                    "handles": [
+                      0.3,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": false,
+                    "type": "bezier"
+                  }
+                ]
+              }
+            }
+          },
+          "Tagline": {
+            "trackIdByPropPath": {
+              "[\"opacity\"]": "tagline-opacity",
+              "[\"tracking\"]": "tagline-tracking",
+              "[\"y\"]": "tagline-y",
+              "[\"arabic\"]": "tagline-arabic"
+            },
+            "trackData": {
+              "tagline-opacity": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Tagline:[\"opacity\"]",
+                "keyframes": [
+                  {
+                    "id": "tagline-opacity-0",
+                    "position": 2.2,
+                    "value": 0,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.16,
+                      1
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "tagline-opacity-1",
+                    "position": 3.0,
+                    "value": 1,
+                    "handles": [
+                      0.3,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": false,
+                    "type": "bezier"
+                  }
+                ]
+              },
+              "tagline-tracking": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Tagline:[\"tracking\"]",
+                "keyframes": [
+                  {
+                    "id": "tagline-tracking-0",
+                    "position": 2.2,
+                    "value": 1.2,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.16,
+                      1
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "tagline-tracking-1",
+                    "position": 3.5,
+                    "value": 0.38,
+                    "handles": [
+                      0.3,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": false,
+                    "type": "bezier"
+                  }
+                ]
+              },
+              "tagline-y": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Tagline:[\"y\"]",
+                "keyframes": [
+                  {
+                    "id": "tagline-y-0",
+                    "position": 2.2,
+                    "value": 18,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.16,
+                      1
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "tagline-y-1",
+                    "position": 3.1,
+                    "value": 0,
+                    "handles": [
+                      0.3,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": false,
+                    "type": "bezier"
+                  }
+                ]
+              },
+              "tagline-arabic": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Tagline:[\"arabic\"]",
+                "keyframes": [
+                  {
+                    "id": "tagline-arabic-0",
+                    "position": 2.6,
+                    "value": 0,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.16,
+                      1
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "tagline-arabic-1",
+                    "position": 3.4,
+                    "value": 1,
+                    "handles": [
+                      0.3,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": false,
+                    "type": "bezier"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitionVersion": "0.4.0",
+  "revisionHistory": [
+    "acumen-reveal-v2"
+  ]
+}

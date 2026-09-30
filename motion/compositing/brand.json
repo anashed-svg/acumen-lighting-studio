@@ -1,0 +1,13 @@
+{
+  "name": "Acumen",
+  "logo_png": "../../video/public/logo-white.png",
+  "font_latin": "../../video/public/fonts/Poppins-ExtraLight.ttf",
+  "font_arabic": "../../video/public/fonts/NotoKufiArabic-Light.ttf",
+  "background": "#050505",
+  "ink": "#F4F1EA",
+  "glow": "#FFC478",
+  "shadow_tint": "#1B2433",
+  "tracking_em": 0.38,
+  "tagline_en": "CRAFTING THE ATMOSPHERE",
+  "tagline_ar": "نصنع الأجواء"
+}

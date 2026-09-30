@@ -1,0 +1,22 @@
+{
+  "name": "acumen-revideo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render": "node render.mjs",
+    "editor": "DISABLE_TELEMETRY=true revideo editor --projectFile ./src/project.ts --port 9000",
+    "smoke": "bash smoke.sh"
+  },
+  "dependencies": {
+    "@revideo/2d": "^0.11.0",
+    "@revideo/core": "^0.11.0",
+    "@revideo/ffmpeg": "^0.11.0",
+    "@revideo/renderer": "^0.11.0",
+    "@revideo/vite-plugin": "^0.11.0"
+  },
+  "devDependencies": {
+    "@revideo/cli": "^0.11.0",
+    "@revideo/ui": "^0.11.0",
+    "typescript": "^5.8.3"
+  }
+}

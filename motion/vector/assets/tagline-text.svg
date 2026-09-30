@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="600" viewBox="0 0 1600 600">
+  <!-- Live-text template: edit the words / fonts, then bake them to outlines with
+       inkscape_export.sh in paths mode (Inkscape shapes Arabic via Pango).
+       Use the full family name for weights ("Poppins ExtraLight"): font-weight is ignored here. -->
+  <rect width="1600" height="600" fill="#050505"/>
+  <text x="800" y="270" text-anchor="middle" direction="rtl" font-family="Noto Kufi Arabic Light"
+        font-size="128" fill="#F4F1EA">نصنع الأجواء</text>
+  <text x="800" y="420" text-anchor="middle" font-family="Poppins ExtraLight" font-size="48"
+        letter-spacing="18" fill="#FFC478">CRAFTING THE ATMOSPHERE</text>
+</svg>

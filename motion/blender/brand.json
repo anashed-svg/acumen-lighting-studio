@@ -1,0 +1,19 @@
+{
+  "logo_svg": "../../video/public/logo-white.svg",
+  "background": "#050505",
+  "ink": "#F4F1EA",
+  "glow": "#FFC478",
+  "light_kelvin": 3000,
+  "white_balance_kelvin": 4000,
+  "sky_zenith": "#010204",
+  "sky_horizon": "#0C1422",
+  "logo_style": "metal",
+  "logo_metal": "#D9D6D0",
+  "font_latin": "Poppins Light",
+  "font_latin_weight": 300,
+  "font_arabic": "Noto Kufi Arabic",
+  "font_arabic_weight": 300,
+  "tracking_em": 0.38,
+  "tagline_en": "CRAFTING THE ATMOSPHERE",
+  "tagline_ar": "نصنع الأجواء"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Example",
+  "logo_png": "../../../video/public/logo-white.png",
+  "font_latin": "/usr/local/share/fonts/google/Montserrat/Montserrat-300.ttf",
+  "font_arabic": "/usr/local/share/fonts/google/IBMPlexSansArabic/IBMPlexSansArabic-300.ttf",
+  "background": "#07090C",
+  "ink": "#EEF3F8",
+  "glow": "#9CCBFF",
+  "shadow_tint": "#241A14",
+  "tracking_em": 0.3,
+  "tagline_en": "YOUR TAGLINE HERE",
+  "tagline_ar": "شعارك هنا"
+}
