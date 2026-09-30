@@ -212,14 +212,16 @@ export const Cup: React.FC = () => {
             </g>
           ) : null}
           {/* 4. second fruit layer */}
-          <rect
-            x={0}
-            y={bandY(BANDS.fruit2[0]) - (bandY(BANDS.fruit2[0]) - bandY(BANDS.fruit2[1])) * fruit2Fill}
-            width={1080}
-            height={(bandY(BANDS.fruit2[0]) - bandY(BANDS.fruit2[1])) * fruit2Fill + 2}
-            fill="url(#q-juice)"
-            opacity={0.85}
-          />
+          {fruit2Fill > 0 ? (
+            <rect
+              x={0}
+              y={bandY(BANDS.fruit2[0]) - (bandY(BANDS.fruit2[0]) - bandY(BANDS.fruit2[1])) * fruit2Fill}
+              width={1080}
+              height={(bandY(BANDS.fruit2[0]) - bandY(BANDS.fruit2[1])) * fruit2Fill + 2}
+              fill="url(#q-juice)"
+              opacity={0.85}
+            />
+          ) : null}
           {FRUIT2.map((p, i) => (
             <Falling key={i} land={p.land} x={p.x} y={p.y} rot={p.rot}>
               <Fruit kind={p.kind} s={p.s} />

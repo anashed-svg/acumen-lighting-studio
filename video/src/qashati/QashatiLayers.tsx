@@ -50,13 +50,14 @@ const Background: React.FC = () => {
 
 // Hero beat (7.6 s "ding"): sparkles pop around the finished cup.
 const SPARKS = [
-  [300, 600, 1],
-  [790, 560, 1.3],
-  [210, 930, 0.8],
-  [880, 880, 1],
-  [540, 500, 0.9],
-  [900, 1180, 0.7],
-  [180, 1220, 0.9],
+  [280, 590, 1.1],
+  [800, 540, 1.4],
+  [170, 900, 0.9],
+  [910, 860, 1.1],
+  [620, 520, 0.8],
+  [930, 1190, 0.8],
+  [150, 1230, 1],
+  [440, 540, 0.7],
 ];
 const Sparkles: React.FC = () => {
   const frame = useCurrentFrame();
@@ -65,7 +66,7 @@ const Sparkles: React.FC = () => {
       {SPARKS.map(([x, y, k], i) => {
         const t = interpolate(frame, [T.hero - 4 + i * 2, T.hero + 4 + i * 2, T.hero + 18 + i * 2], [0, 1, 0], clamp);
         if (t <= 0) return null;
-        const r = 38 * k * t;
+        const r = 60 * k * t;
         return (
           <path
             key={i}
