@@ -90,3 +90,5 @@
 | `gemini_render.py` | الاتصال بموديل Gemini |
 | `prompt.py` | برومبت الإضاءة (عدّل عليه للتحكم بالشكل) |
 | `.env` | المفاتيح (تعمله إنت من `.env.example`) |
+| `video/` | استوديو الفيديو (Remotion) — شوف `video/README.md` |
+| `scripts/setup-video-tools.sh` | تنزيل كل أدوات الفيديو بأمر واحد |

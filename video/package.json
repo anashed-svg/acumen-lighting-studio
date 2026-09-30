@@ -1,0 +1,21 @@
+{
+  "name": "acumen-video",
+  "private": true,
+  "description": "Acumen motion graphics (Remotion)",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render",
+    "still": "remotion still"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.530",
+    "@remotion/fonts": "4.0.530",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "remotion": "4.0.530"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.0",
+    "typescript": "5.8.3"
+  }
+}

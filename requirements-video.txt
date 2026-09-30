@@ -1,0 +1,28 @@
+# Video-production toolchain (installed by scripts/setup-video-tools.sh)
+
+# Editing / compositing
+moviepy>=2.1
+opencv-python-headless>=4.10
+pillow>=10.4
+numpy>=1.26
+imageio[ffmpeg]>=2.35
+scenedetect>=0.6.4          # cut / scene detection on reference footage
+
+# Arabic text rendering (shaping + RTL) for titles & subtitles
+arabic-reshaper>=3.0
+python-bidi>=0.6
+
+# Audio: voice-over + auto subtitles
+edge-tts>=6.1               # free Arabic/English TTS voices
+elevenlabs>=1.9             # premium voice-over (needs ELEVENLABS_API_KEY)
+faster-whisper>=1.0         # speech-to-text -> .srt captions
+
+# AI generation APIs (keys in .env)
+openai>=2.0                 # Sora video + gpt-image + TTS
+google-genai>=1.30          # Veo video + Gemini / Nano Banana images
+replicate>=1.0              # Kling, Luma, Runway, Flux ... via Replicate
+fal-client>=0.5             # same models via fal.ai
+
+# Utilities
+yt-dlp>=2025.1              # grab reference / moodboard clips
+python-dotenv>=1.0.1
