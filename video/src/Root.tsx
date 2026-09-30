@@ -3,6 +3,7 @@ import {AcumenIntro} from './AcumenIntro';
 import {Showcase2DCompositions} from './showcase2d/compositions';
 import {Showcase3DCompositions} from './showcase3d/compositions';
 import {ShowcaseFxCompositions} from './showcaseFx/compositions';
+import {MishQashtaCompositions} from './qashati2/compositions';
 
 export const Root: React.FC = () => (
   <>
@@ -16,5 +17,7 @@ export const Root: React.FC = () => (
     <Showcase3DCompositions />
     {/* Skia shaders, Tailwind lower third, social captions */}
     <ShowcaseFxCompositions />
+    {/* Qashati Alsham — «مش قشطة» */}
+    <MishQashtaCompositions />
   </>
 );
