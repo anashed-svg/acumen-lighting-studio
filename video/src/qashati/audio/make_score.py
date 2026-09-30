@@ -3,11 +3,11 @@
 
     python3 video/src/qashati/audio/make_score.py
       -> video/public/qashati/audio/layers.mp3   48 kHz stereo, 192 kbps, 16.0 s, -14 LUFS, <= -1 dBTP
-      -> video/out/qashati/layers.wav             24-bit copy for inspection
+      -> video/out/qashati/layers.wav             24-bit master, for inspection
 
-Everything is synthesized from sines and seeded noise: no samples, no borrowed melodies, so the brand
-owns the result. F major, 120 BPM, 8 bars of 2.0 s. Move sound effects by editing SFX_CUES (seconds);
-the music is laid out by the constants below it. Output is bit-identical run to run (fixed seeds).
+All sound is synthesized here from sines and seeded noise (no samples, no borrowed melodies), so the
+brand owns it. F major, 120 BPM, 8 bars of 2.0 s. Move SFX by editing SFX_CUES (seconds; optional "gain"
+scales one cue); the music is laid out by the constants below it. Output is deterministic.
 """
 import subprocess
 from pathlib import Path
@@ -23,38 +23,30 @@ MP3, WAV = REPO / "video/public/qashati/audio/layers.mp3", REPO / "video/out/qas
 SR, DUR, BPM, SEED = 48000, 16.0, 120, 2026
 N, BEAT = int(SR * DUR), 60 / BPM
 BAR, S16 = 4 * BEAT, BEAT / 4
-TARGET_LUFS, CEILING_DBTP, DUCK_DB = -14.0, -1.7, 4.0  # ceiling leaves headroom for MP3 overshoot
+TARGET_LUFS, CEILING_DBTP, DUCK_DB = -14.0, -1.7, 4.0  # music dips DUCK_DB under SFX
 
 # ---- SFX timeline: (seconds, kind, params). Whoosh-type cues start at their time. ----
 SFX_CUES = [
-    (0.00, "whoosh", dict(dur=0.50, f0=300, f1=4500, peak=0.45)),  # cup springs in (upward)
+    (0.00, "whoosh", dict(dur=0.50, f0=300, f1=4500, peak=0.45, gain=0.75)),  # cup springs in (up)
     (0.60, "plop", {}),                                           # cream dollop lands
-    (1.25, "pop", dict(note="C5", pan=-0.3)),                     # fruit pieces, rising
-    (1.45, "pop", dict(note="D5", pan=0.3)),
-    (1.65, "pop", dict(note="F5", pan=-0.3)),
-    (1.85, "pop", dict(note="G5", pan=0.3)),
-    (2.05, "pop", dict(note="A5", pan=-0.3)),
-    (2.25, "pop", dict(note="C6", pan=0.3)),
+    (1.25, "pop", dict(note="C5", pan=-0.3)), (1.45, "pop", dict(note="D5", pan=0.3)),  # fruit, rising
+    (1.65, "pop", dict(note="F5", pan=-0.3)), (1.85, "pop", dict(note="G5", pan=0.3)),
+    (2.05, "pop", dict(note="A5", pan=-0.3)), (2.25, "pop", dict(note="C6", pan=0.3)),
     (2.80, "gloop", {}),                                          # thick cream
-    (4.20, "pop", dict(note="D6", pan=0.3)),                      # more fruit, falling
-    (4.45, "pop", dict(note="C6", pan=-0.3)),
-    (4.70, "pop", dict(note="Bb5", pan=0.3)),
-    (4.95, "pop", dict(note="F5", pan=-0.3)),
+    (4.20, "pop", dict(note="D6", pan=0.3)), (4.45, "pop", dict(note="C6", pan=-0.3)),  # more fruit, falling
+    (4.70, "pop", dict(note="Bb5", pan=0.3)), (4.95, "pop", dict(note="F5", pan=-0.3)),
     (5.20, "drizzle", dict(dur=1.20)),                            # honey
     (6.40, "sprinkle", dict(dur=1.00, n=14)),                     # nuts
     (7.60, "ding", {}),                                           # hero sparkle
-    (8.00, "swap", dict(note="F5", pan=-0.25)),                   # topping swaps: whoosh + pop @ +0.12
-    (9.10, "swap", dict(note="A5", pan=0.25)),
-    (10.20, "swap", dict(note="D6", pan=-0.25)),
-    (11.30, "swap", dict(note="F6", pan=0.25)),
-    (12.40, "whoosh", dict(dur=0.80, f0=5000, f1=250, peak=0.8)),  # downward wipe of dripping cream...
+    (8.00, "swap", dict(note="F5", pan=-0.25)), (9.10, "swap", dict(note="A5", pan=0.25)),  # topping swaps:
+    (10.20, "swap", dict(note="D6", pan=-0.25)), (11.30, "swap", dict(note="F6", pan=0.25)),  # swish + pop @+.12
+    (12.40, "whoosh", dict(dur=0.80, f0=5000, f1=250, peak=0.8, pan=(0.4, -0.4), gain=1.5)),  # cream wipe...
     (13.20, "splash", {}),                                        # ...into the splash
-    (13.25, "drop", dict(note="C6", pan=-0.25)),                  # logo dot 1
-    (13.45, "drop", dict(note="F6", pan=0.25)),                   # logo dot 2
+    (13.25, "drop", dict(note="C6", pan=-0.25)), (13.45, "drop", dict(note="F6", pan=0.25)),  # logo's 2 dots
     (14.70, "chime", {}),                                         # call to action
 ]
-SFX_GAIN = dict(whoosh=0.55, plop=0.8, pop=0.55, gloop=0.75, drizzle=0.32, sprinkle=0.45, ding=0.42,
-                swap=0.5, splash=0.7, drop=0.5, chime=0.4)
+SFX_GAIN = dict(whoosh=1.0, plop=0.8, pop=0.55, gloop=0.75, drizzle=0.6, sprinkle=0.9, ding=0.42,
+                swap=0.5, splash=0.6, drop=0.9, chime=0.32)
 
 # ---- music ----
 CHORDS = {"F": ("F2", "F4 A4 C5 F5 A5"), "Dm": ("D2", "D4 F4 A4 D5 F5"),  # (bass root, marimba voicing)
@@ -68,17 +60,15 @@ CADENCE = [(12.0, "Bb"), (12.5, "C")]                  # bar 7 stabs, then a bre
 PICKUP = [(12.825, "C5"), (12.95, "E5"), (13.075, "G5")]
 SPARKLES = [(3.5, "F6 A6"), (13.2, "A6 C7 F7")]        # glockenspiel accents (rolled)
 HIT_T, DRUMS_END, FADE = 13.2, 12.5, 0.6
-MARIMBA = [(1, 1, 1), (3.93, .35, .14), (9.2, .08, .05)]  # (partial ratio, amp, decay factor)
-KALIMBA = [(1, 1, 1), (5.9, .25, .1), (2.0, .08, .5)]
-GLOCK = [(1, 1, 1), (2.76, .3, .35), (5.4, .1, .15)]
-BELL = [(1, 1, 1), (2.0, .3, .6), (3.0, .1, .35), (4.16, .05, .2)]
+# mallet timbres: (partial ratio, amplitude, decay factor)
+MARIMBA, KALIMBA = [(1, 1, 1), (3.93, .35, .14), (9.2, .08, .05)], [(1, 1, 1), (5.9, .25, .1), (2.0, .08, .5)]
+GLOCK, BELL = [(1, 1, 1), (2.76, .3, .35), (5.4, .1, .15)], [(1, 1, 1), (2.0, .3, .6), (3.0, .1, .35), (4.16, .05, .2)]
 RNG = np.random.default_rng(SEED)
 
-
+# ---- building blocks ----
 def hz(note):  # "Bb4" -> 466.16
     pc = "C D EF G A B".index(note[0]) + note[1:].count("#") - note[1:].count("b")
     return 440 * 2 ** ((pc + 12 * (int(note[-1]) + 1) - 69) / 12)
-
 
 def tt(d): return np.arange(int(d * SR)) / SR
 def env(t, a, d): return np.minimum(t / a, 1) * np.exp(-np.maximum(t - a, 0) / d)  # attack, decay const
@@ -86,41 +76,34 @@ def osc(f): return np.sin(2 * np.pi * np.cumsum(f) / SR)                        
 def noise(d): return RNG.standard_normal(int(d * SR))
 def norm(x): return x / (np.abs(x).max() + 1e-12)
 def filt(x, kind, fc, order=2): return sosfilt(butter(order, fc, kind, fs=SR, output="sos"), x, axis=0)
-def delay(x, s): return np.concatenate([np.zeros(int(s * SR)), x])
+def reverb(x, **kw): return Pedalboard([Reverb(**kw)])(x.T.astype(np.float32), SR).T.astype(np.float64)
 
-
-def pan2(sig, pan=0.0):  # constant-power pan; pan may be an array (moving sources)
+def pan2(sig, pan=0.0):  # constant-power pan; pan may be an array (moving source)
     th = (np.clip(np.broadcast_to(pan, sig.shape), -1, 1) + 1) * np.pi / 4
     return np.stack([sig * np.cos(th), sig * np.sin(th)], 1)
 
-
-def place(buf, sig, t, pan=0.0, v=1.0):
+def place(buf, sig, t, pan=0.0, v=1.0):  # mix sig in at time t, with a 10 ms tail fade (no truncation clicks)
+    sig = (pan2(sig, pan) if sig.ndim == 1 else sig) * np.minimum(1, np.arange(len(sig), 0, -1) / (.01 * SR))[:, None]
     i = int(round(t * SR))
     n = max(0, min(len(sig), len(buf) - i))
-    buf[i:i + n] += v * (pan2(sig, pan) if sig.ndim == 1 else sig)[:n]
+    buf[i:i + n] += v * sig[:n]
 
-
-def tone(note, parts=MARIMBA, d=None, length=None):  # additive mallet/bell voice
+def tone(note, parts=MARIMBA, d=None, length=None):  # additive mallet / bell voice
     f = hz(note)
     d = d or .55 * (440 / f) ** .5  # low bars ring longer
     t = tt(length or min(5 * d, 3.0))
     return sum(a * np.sin(2 * np.pi * f * r * t) * env(t, .0015, d * k) for r, a, k in parts if f * r < 9000)
 
-
-def pluck(f, d=.3, length=1.0):  # soft plucked bass: harmonics decay faster than the fundamental
+def pluck(f, d=.3, length=1.0):  # soft plucked bass: upper harmonics die first
     t = tt(length)
     return sum(np.sin(2 * np.pi * f * k * t) / k * env(t, .004, d / k ** .6) for k in range(1, 7))
 
-
 def kick(): t = tt(.3); return osc(50 + 100 * np.exp(-t / .025)) * env(t, .001, .09)
 def shaker(): t = tt(.1); return norm(filt(noise(.1), "bandpass", [4500, 9500])) * env(t, .01, .022)
-
-
 def snap():  # two close noise bursts = finger snap / light clap
     t = tt(.18)
     e = env(t, .0005, .025) + .6 * env(np.maximum(t - .011, 0), .0005, .04) * (t > .011)
     return norm(filt(noise(.18) * e, "bandpass", [1100, 4200]))
-
 
 def swept(d, f0, f1, width=.5):  # noise band whose centre glides exponentially f0 -> f1
     f, ts, Z = stft(noise(d + .05), SR, nperseg=1024)
@@ -128,20 +111,20 @@ def swept(d, f0, f1, width=.5):  # noise band whose centre glides exponentially 
     Z = Z * np.exp(-.5 * (np.log2(np.maximum(f, 20)[:, None] / fc) / width) ** 2)
     return norm(istft(Z, SR, nperseg=1024)[1][:int(d * SR)])
 
+def bubble(note, pan, glide, tau, decay, length):  # pitch chirps up and settles on a tuned note
+    f, t = hz(note), tt(length)
+    fr = f * (1 - glide * np.exp(-t / tau))
+    return pan2(osc(fr) * env(t, .001, decay) + .18 * osc(2 * fr) * env(t, .001, min(decay, .05)), pan)
 
-# ---- SFX voices (return mono or stereo, starting at the cue time) ----
-def whoosh(dur, f0, f1, peak=.45, pan=(-.4, .4)):
+# ---- SFX voices: each returns audio that starts at its cue time ----
+def pop(note, pan=0.0): return bubble(note, pan, .35, .012, .035, .16)   # fruit piece
+def drop(note, pan=0.0): return bubble(note, pan, .3, .008, .15, .6)     # plink, rings longer
+
+def whoosh(dur, f0, f1, peak=.45, pan=(-.4, .4), start=.3):  # swell peaks at `peak` (0-1) of dur
     t = tt(dur)
     swell = np.sin(np.pi * np.clip(t / dur, 1e-9, 1) ** (np.log(.5) / np.log(peak)))
-    e = np.minimum(t / .012, 1) * (.3 + .7 * swell) * np.minimum((dur - t) / .03, 1)
+    e = np.minimum(t / .01, 1) * (start + (1 - start) * swell) * np.minimum((dur - t) / .03, 1)
     return pan2(swept(dur, f0, f1) * e, np.linspace(*pan, len(t)))
-
-
-def pop(note, pan=0.0):  # bubble: quick upward chirp that settles on a tuned pitch
-    f, t = hz(note), tt(.16)
-    fr = f * (1 - .35 * np.exp(-t / .012))
-    return pan2((osc(fr) + .15 * osc(2 * fr)) * env(t, .001, .035), pan)
-
 
 def plop():
     t = tt(.45)
@@ -149,35 +132,30 @@ def plop():
     thump = osc(60 + 80 * np.exp(-t / .015)) * env(t, .001, .08)
     return .9 * body + .7 * thump + .2 * norm(filt(noise(.45), "lowpass", 1400)) * env(t, .002, .04)
 
-
-def gloop():  # lower, longer, rounder than the plop, with a sticky wobble and a second small bubble
+def gloop():  # lower, longer, rounder than the plop: sticky wobble + a second small bubble
     t = tt(.7)
     wob = 1 + .06 * np.sin(2 * np.pi * 11 * t) * np.exp(-t / .15)
     a = osc(230 * (1 - .5 * np.exp(-t / .045)) * wob) * env(t, .004, .16)
-    b = delay(osc(300 * (1 - .45 * np.exp(-t / .03))) * env(t, .003, .07), .14)[:len(t)]
+    b = np.roll(osc(300 * (1 - .45 * np.exp(-t / .03))) * env(t, .003, .07), int(.14 * SR))
     thump = osc(55 + 60 * np.exp(-t / .02)) * env(t, .002, .12)
     return a + .45 * b + .6 * thump + .15 * norm(filt(noise(.7), "lowpass", 700)) * env(t, .005, .1)
-
 
 def drizzle(dur):  # glossy stream: narrow noise band + soft detuned sine glide, drifting L -> R
     t = tt(dur)
     e = np.minimum(t / .04, 1) * np.minimum((dur - t) / .4, 1) * (.85 + .15 * np.sin(2 * np.pi * 1.3 * t))
     f = 700 * 2 ** (.5 * t / dur) * (1 + .006 * np.sin(2 * np.pi * 5 * t))
-    s = e * (.6 * swept(dur, 1800, 3000, width=.3) + .18 * (osc(f) + osc(f * 1.006)))
-    return pan2(s, np.linspace(-.3, .3, len(t))) + .6 * np.pad(pop("F5"), ((0, len(t) - int(.16 * SR)), (0, 0)))
-
+    s = pan2(e * (.6 * swept(dur, 1800, 3000, .3) + .2 * (osc(f) + .5 * osc(f * 1.006))), np.linspace(-.3, .3, len(t)))
+    place(s, pop("F5"), 0, v=.6)  # the first touch of honey
+    return s
 
 def sprinkle(dur, n):  # jittered grid of tiny woody ticks
     out, t = np.zeros((int((dur + .1) * SR), 2)), tt(.05)
     times = np.clip((np.arange(n) + RNG.uniform(-.35, .35, n)) * dur / n, 0, dur)
-    times[0] = 0
-    for tk in times:
-        f = RNG.uniform(1800, 3600)
-        tick = np.sin(2 * np.pi * f * t) * env(t, .0004, .008)
+    for tk in np.r_[0, times[1:]]:
+        tick = np.sin(2 * np.pi * RNG.uniform(1800, 3600) * t) * env(t, .0004, .008)
         tick += .5 * norm(filt(noise(.05), "bandpass", [2000, 6000])) * env(t, .0003, .004)
         place(out, tick, tk, RNG.uniform(-.6, .6), RNG.uniform(.6, 1.0))
     return out
-
 
 def ding():  # hero sparkle: rolled glockenspiel triad + a shimmering high partial
     out, t = np.zeros((int(3.2 * SR), 2)), tt(2.0)
@@ -186,42 +164,33 @@ def ding():  # hero sparkle: rolled glockenspiel triad + a shimmering high parti
     place(out, np.sin(2 * np.pi * hz("F7") * t) * env(t, .01, .4) * (.6 + .4 * np.sin(2 * np.pi * 13 * t)), .06, 0, .2)
     return out
 
-
-def swap(note, pan=0.0):
+def swap(note, pan=0.0):  # short swish, then a pop as the new topping lands
     out = np.zeros((int(.5 * SR), 2))
-    place(out, whoosh(.12, 1200, 6000, peak=.7, pan=(-pan, pan)), 0, v=.8)
+    place(out, whoosh(.12, 1200, 6000, peak=.6, pan=(-pan, pan), start=.8), 0, v=1.2)
     place(out, pop(note, pan), .12, v=1.1)
     return out
 
-
 def splash():
     t = tt(1.0)
-    body = np.stack([norm(filt(noise(1.0), "lowpass", 2200)) for _ in range(2)], 1) * env(t, .003, .09)[:, None]
+    body = np.stack([norm(filt(noise(1.0), "lowpass", 1600)) for _ in range(2)], 1) * env(t, .003, .06)[:, None]
     thump = osc(45 + 90 * np.exp(-t / .02)) * env(t, .001, .12)
     return pan2(.8 * thump + .3 * norm(filt(noise(1.0), "lowpass", 800)) * env(t, .01, .3)) + .45 * body
-
-
-def drop(note, pan=0.0):  # plink: short upward settle onto a tuned note
-    f, t = hz(note), tt(.6)
-    fr = f * (1 - .3 * np.exp(-t / .008))
-    return pan2(osc(fr) * env(t, .001, .15) + .2 * osc(2 * fr) * env(t, .001, .05), pan)
-
 
 def chime():
     out = np.zeros((int(1.9 * SR), 2))
     for k, (note, pan, v) in enumerate([("C6", -.2, 1), ("F6", .2, .9), ("A6", 0, .35)]):
-        place(out, tone(note, BELL, d=.7, length=1.8), .07 * k, pan, v)
+        place(out, tone(note, BELL, d=.7, length=1.75), .07 * k, pan, v)
     return out
 
-
+# ---- arrangement ----
 def sfx():
     global RNG
     buf = np.zeros((N, 2))
     for t, kind, p in SFX_CUES:
-        RNG = np.random.default_rng(SEED + int(t * 1000))  # per-cue seed: moving one cue changes only it
-        place(buf, globals()[kind](**p), t, v=SFX_GAIN[kind])
-    return Pedalboard([Reverb(room_size=.2, damping=.6, wet_level=.07, dry_level=1, width=.8)])(buf.T.astype(np.float32), SR).T
-
+        RNG = np.random.default_rng(SEED + int(t * 1000))  # per-cue seed: moving a cue changes only that cue
+        kw = {k: v for k, v in p.items() if k != "gain"}
+        place(buf, globals()[kind](**kw), t, v=SFX_GAIN[kind] * p.get("gain", 1.0))
+    return reverb(buf, room_size=.2, damping=.6, wet_level=.07, dry_level=1, width=.8)
 
 def music():
     global RNG
@@ -230,31 +199,27 @@ def music():
     for b, name in enumerate(BARS):
         (root, voicing), t0 = CHORDS[name], b * BAR
         for k, (pos, idx, v) in enumerate(GROOVE):
-            vel = v * (.25 + .5 * pos / 16 if b == 0 else 1)  # intro crescendo
+            vel = v * (.45 + .45 * pos / 16 if b == 0 else 1)  # intro crescendo
             place(mal, tone(voicing.split()[idx]), t0 + pos * S16, (-.25, .25)[k % 2], vel)
-        if b == 0:
-            continue
-        for pos, semi, v in BASSLINE:
-            place(bass, pluck(hz(root) * 2 ** (semi / 12)), t0 + pos * S16, 0, v)
-        for beat in (0, 2):
-            place(drum, kick(), t0 + beat * BEAT)
-        for beat in (1, 3):
-            place(drum, snap(), t0 + beat * BEAT, .2, .3)
+        if b > 0:  # groove: bass, kick on 1 & 3, snap on 2 & 4
+            for pos, semi, v in BASSLINE:
+                place(bass, pluck(hz(root) * 2 ** (semi / 12)), t0 + pos * S16, 0, v)
+            for beat in (0, 2):
+                place(drum, kick(), t0 + beat * BEAT)
+                place(drum, snap(), t0 + (beat + 1) * BEAT, .2, .45)
     for t, name in CADENCE:
-        root, voicing = CHORDS[name]
-        for note in voicing.split():
+        for note in CHORDS[name][1].split():
             place(mal, tone(note), t, 0, .3)
-        place(bass, pluck(hz(root)), t, 0, .9)
+        place(bass, pluck(hz(CHORDS[name][0])), t, 0, .9)
     place(drum, kick(), CADENCE[0][0])
-    place(drum, snap(), CADENCE[1][0], .2, .3)
+    place(drum, snap(), CADENCE[1][0], .2, .45)
     for t, note in MELODY + PICKUP:
         place(mal, tone(note, KALIMBA), t, .15, .5)
     for k in range(int(DRUMS_END / (BEAT / 2))):  # shaker 8ths, offbeats accented, fading in over bar 1
-        place(drum, shaker(), k * BEAT / 2, -.35, .12 * min(.3 + k / 8, 1) * (1 if k % 2 else .55))
-    root, voicing = CHORDS["F"]  # the resolving hit, left to ring out
-    for note in ["F3"] + voicing.split():
-        place(mal, tone(note, d=1.1 * .55 * (440 / hz(note)) ** .5), HIT_T, 0, .45)
-    place(bass, pluck(hz(root), d=.8, length=2.8), HIT_T, 0, 1)
+        place(drum, shaker(), k * BEAT / 2, -.35, .16 * min(.3 + k / 8, 1) * (1 if k % 2 else .55))
+    for note in ["F3"] + CHORDS["F"][1].split():  # the resolving hit, left to ring out over a soft pad
+        place(mal, tone(note, d=.6 * (440 / hz(note)) ** .5), HIT_T, 0, .45)
+    place(bass, pluck(hz(CHORDS["F"][0]), d=.8, length=2.8), HIT_T, 0, 1)
     place(drum, kick(), HIT_T, 0, .7)
     t = tt(DUR - HIT_T)
     pad = sum(np.sin(2 * np.pi * hz(n) * t) + np.sin(2 * np.pi * hz(n) * 1.004 * t) for n in "F3 A3 C4 F4".split())
@@ -263,35 +228,30 @@ def music():
         for j, note in enumerate(notes.split()):
             place(mal, tone(note, GLOCK, d=.8), t + .04 * j, (j - 1) * .3, .12)
     bed = .22 * filt(mal, "lowpass", 8000) + .3 * bass + .5 * drum
-    return Pedalboard([Reverb(room_size=.3, damping=.5, wet_level=.12, dry_level=.9, width=1)])(bed.T.astype(np.float32), SR).T
+    return reverb(bed, room_size=.3, damping=.5, wet_level=.12, dry_level=.9, width=1)
 
-
-def lufs(x):  # ITU-R BS.1770-4 integrated loudness (48 kHz K-weighting, gated)
-    k = lfilter([1.53512485958697, -2.69169618940638, 1.19839281085285], [1, -1.69065929318241, .73248077421585], x, axis=0)
-    k = lfilter([1, -2, 1], [1, -1.99004745483398, .99007225036621], k, axis=0)
+# ---- mastering ----
+def lufs(x):  # ITU-R BS.1770-4 integrated loudness (48 kHz K-weighting, 400 ms blocks, gated)
+    k = lfilter([1.53512486, -2.69169619, 1.19839281], [1, -1.69065929, .73248077], x, axis=0)
+    k = lfilter([1, -2, 1], [1, -1.99004745, .99007225], k, axis=0)
     ms = np.array([(k[i:i + 19200] ** 2).mean(0).sum() for i in range(0, len(k) - 19200 + 1, 4800)])
     ms = ms[ms > 10 ** ((-70 + .691) / 10)]
-    ms = ms[ms > ms.mean() * .1]
-    return -.691 + 10 * np.log10(ms.mean())
+    return -.691 + 10 * np.log10(ms[ms > ms.mean() * .1].mean())
 
-
-def limiter_gain(x, ceil_db, attack=.004, hold=.04):  # look-ahead gain curve against 4x-oversampled peaks
+def limiter_gain(x, ceil_db, attack=.004, hold=.04):  # look-ahead gain curve vs 4x-oversampled peaks
     pk = np.abs(resample_poly(x, 4, 1, axis=0)).max(1)[:4 * len(x)].reshape(-1, 4).max(1)
     need = np.minimum(1, 10 ** (ceil_db / 20) / np.maximum(pk, 1e-9))
     w, h = int(attack * SR), int(hold * SR)
     g = minimum_filter1d(need, w + h + 1)
-    g = uniform_filter1d(np.concatenate([np.full(h // 2, g[0]), g[:len(g) - h // 2]]), w)
+    g = uniform_filter1d(np.r_[np.full(h // 2, g[0]), g[:len(g) - h // 2]], w)
     assert np.all(g <= need + 1e-9)
     return g
 
-
 def master(music_bus, sfx_bus):
-    """Duck music under SFX, shape, fade, normalise to TARGET_LUFS under the true-peak ceiling.
-    Returns (out, music_part, sfx_part) with out == music_part + sfx_part."""
-    lev = uniform_filter1d(maximum_filter1d(np.abs(sfx_bus).max(1), int(.02 * SR)), int(.06 * SR))
-    music_bus = music_bus * (10 ** (-DUCK_DB * np.clip(lev / (.3 * lev.max()), 0, 1) / 20))[:, None]
-    shape = lambda x: filt(filt(x, "highpass", 25), "lowpass", 14000)  # no DC / sub rumble, no fizz
-    m, s = shape(music_bus), shape(sfx_bus)
+    """Duck, clean up, fade, hit TARGET_LUFS under the TP ceiling. Returns (out, music_part, sfx_part)."""
+    lev = uniform_filter1d(maximum_filter1d(np.abs(sfx_bus).max(1), int(.1 * SR)), int(.05 * SR))
+    music_bus = music_bus * (10 ** (-DUCK_DB * np.clip(lev / (.1 * lev.max()), 0, 1) / 20))[:, None]
+    m, s = (filt(filt(x, "highpass", 25), "lowpass", 14000) for x in (music_bus, sfx_bus))  # no DC, no fizz
     fade = np.ones(N)
     fade[-int(FADE * SR):] = np.cos(np.linspace(0, np.pi / 2, int(FADE * SR))) ** 2
     fade[:int(.003 * SR)] = np.linspace(0, 1, int(.003 * SR))
@@ -301,18 +261,21 @@ def master(music_bus, sfx_bus):
     g = (gain * limiter_gain(mix * gain, CEILING_DBTP) * fade)[:, None]
     return g * (m + s), g * m, g * s
 
+def encode(gain_db):  # WAV -> MP3 with a level trim; returns the decoded MP3
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(WAV), "-af", f"volume={gain_db:.3f}dB",
+                    "-c:a", "libmp3lame", "-b:a", "192k", "-ar", str(SR), "-ac", "2", str(MP3)], check=True)
+    pcm = subprocess.run(["ffmpeg", "-v", "error", "-i", str(MP3), "-f", "f32le", "-"], capture_output=True, check=True)
+    return np.frombuffer(pcm.stdout, np.float32).reshape(-1, 2)
 
 def main():
     out, _, _ = master(music(), sfx())
-    WAV.parent.mkdir(parents=True, exist_ok=True)
-    MP3.parent.mkdir(parents=True, exist_ok=True)
+    for path in (WAV, MP3):
+        path.parent.mkdir(parents=True, exist_ok=True)
     sf.write(WAV, out, SR, subtype="PCM_24")
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(WAV), "-c:a", "libmp3lame", "-b:a", "192k",
-                    "-ar", str(SR), "-ac", "2", str(MP3)], check=True)
-    tp = 20 * np.log10(np.abs(resample_poly(out, 4, 1, axis=0)).max())
-    print(f"{WAV.relative_to(REPO)}  {len(out) / SR:.3f} s  {lufs(out):.2f} LUFS  true peak {tp:.2f} dBTP")
-    print(f"{MP3.relative_to(REPO)}  (192 kbps; verify with: ffmpeg -i {MP3.name} -af ebur128=peak=true -f null -)")
-
+    dec = encode(TARGET_LUFS - lufs(encode(0.0)))  # LAME output lands ~0.27 dB low; re-encode with a trim
+    for path, x in ((WAV, out), (MP3, dec)):
+        tp = 20 * np.log10(np.abs(resample_poly(x, 4, 1, axis=0)).max())
+        print(f"{path.relative_to(REPO)}  {len(x) / SR:.3f} s  {lufs(x):.2f} LUFS  true peak {tp:.2f} dBTP")
 
 if __name__ == "__main__":
     main()
