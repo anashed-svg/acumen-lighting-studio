@@ -5,7 +5,7 @@ import {BatteryIcon, SignalIcon, WifiIcon} from './Icons';
 export const STATUS_H = 132;
 
 // Odometer-style clock: characters that differ between `from` and `to` roll upwards.
-const RollingClock: React.FC<{from: string; to: string; p: number; color: string}> = ({from, to, p, color}) => (
+export const RollingClock: React.FC<{from: string; to: string; p: number; color: string}> = ({from, to, p, color}) => (
   <div style={{display: 'flex', direction: 'ltr', color}}>
     {from.split('').map((c, i) => {
       const d = to[i] ?? c;
@@ -33,7 +33,8 @@ export const StatusBar: React.FC<{
   dark: boolean;
   network?: 'wifi' | '5G';
   shadow?: boolean;
-}> = ({clock, clockTo, roll = 0, battery, dark, network = 'wifi', shadow}) => {
+  hideClock?: boolean; // lock screen: the big clock is the clock
+}> = ({clock, clockTo, roll = 0, battery, dark, network = 'wifi', shadow, hideClock}) => {
   const color = dark ? '#FFFFFF' : '#15130F';
   const low = battery <= 20;
   return (
@@ -51,9 +52,11 @@ export const StatusBar: React.FC<{
       }}
     >
       {/* RTL phones put the clock on the right */}
-      <div style={{position: 'absolute', right: 86, top: 40, fontSize: 45, fontWeight: 600, lineHeight: '54px', letterSpacing: 0.5}}>
-        <RollingClock from={clock} to={clockTo ?? clock} p={roll} color={color} />
-      </div>
+      {hideClock ? null : (
+        <div style={{position: 'absolute', right: 86, top: 40, fontSize: 45, fontWeight: 600, lineHeight: '54px', letterSpacing: 0.5}}>
+          <RollingClock from={clock} to={clockTo ?? clock} p={roll} color={color} />
+        </div>
+      )}
       <div style={{position: 'absolute', left: 74, top: 50, display: 'flex', alignItems: 'center', gap: 16, direction: 'ltr'}}>
         <div style={{display: 'flex', alignItems: 'center', gap: 8}}>
           <BatteryIcon level={battery} size={70} color={color} fill={low ? '#FF3B30' : undefined} />

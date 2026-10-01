@@ -1,38 +1,87 @@
 // «مش قشطة» — Acts 1–2 as a phone screen recording (frames 0 → T.cupShot) + the cream reveal overlay.
-// Layers: UI under the glass (screens, banners, touches) → stamps on the glass → cream on the glass.
+// Layers (all inside one "camera"): UI under the glass (screens, touches) → red wash + dim → order banner
+// → stamps on the glass → cream on the glass.
 import React from 'react';
-import {AbsoluteFill, interpolate, random, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, interpolate, random, useCurrentFrame, useVideoConfig} from 'remotion';
 import {COLORS, H, T, W} from '../spec';
-import {CreamDefs, CreamFilter, GlassCream, REVEAL_FRAMES, RevealGloss, RevealShape} from './glass/Cream';
+import {CreamDefs, CreamFilter, CreamSheet, GlassCream, REVEAL_FRAMES, RevealFilm, RevealGloss, RevealShape} from './glass/Cream';
 import {Stamp, StampFilters} from './glass/Stamp';
+import {N_STAMPS, splatImpact, SPLAT_IDX, STAMPS} from './layout';
 import './theme';
-import {clamp, P} from './timeline';
-import {familyArrivals} from './ui/Chats';
+import {clamp, frozen, P} from './timeline';
+import {OrderBanner} from './ui/OrderBanner';
 import {Screens} from './ui/Screens';
 
-// Phone shake: stamp slams, drop impacts, and the family-chat buzzing that builds until the dead stop.
-const shakeAt = (f: number) => {
+const STAMP_AT = [...T.screens.map((s) => s.stamp), ...T.burst];
+
+// Phone shake: stamp slams (the hook hardest, the burst a machine-gun), the family buzzing that builds
+// until the dead stop, and small knocks when cream lands. Nothing moves between act1End and the banner.
+const shakeAt = (frame: number) => {
   let amp = 0;
   let kick = 0;
-  T.screens.forEach((s) => {
-    const k = f - s.stamp;
-    if (k >= 0 && k < 12) {
-      amp += 30 * Math.exp(-k * 0.42);
-      if (k === 0) kick = 1;
-    }
-  });
-  T.dropLand.forEach((l) => {
-    const k = f - l;
-    if (k >= 0 && k < 6) amp += 8 * Math.exp(-k * 0.6);
-  });
-  if (f >= P.chaos.from && f < T.act1End) {
-    amp += interpolate(f, [P.chaos.from, T.act1End - 1], [2, 11], clamp);
-    if (familyArrivals.includes(f)) amp += 6;
+  const f = frozen(frame);
+  if (frame < T.act1End) {
+    STAMP_AT.forEach((at, i) => {
+      const k = f - at;
+      if (k < 0 || k > 14) return;
+      const a = i === 0 ? 58 : i < 4 ? 30 : 17;
+      amp += a * Math.exp(-k * (i === 0 ? 0.33 : 0.45));
+      if (k === 0) kick += i === 0 ? 1.6 : i < 4 ? 1 : 0.6;
+    });
+    if (f >= P.chaos.from) amp += interpolate(f, [P.chaos.from, T.act1End - 1], [2, 9], clamp);
   }
-  const x = amp * (random(`sx${f}`) * 2 - 1);
-  const y = amp * (random(`sy${f}`) * 2 - 1) + kick * 10;
-  const r = amp * 0.035 * (random(`sr${f}`) * 2 - 1);
+  T.dropLand.forEach((l) => {
+    const k = frame - l;
+    if (k >= 0 && k < 6) amp += 7 * Math.exp(-k * 0.6);
+  });
+  SPLAT_IDX.forEach((i) => {
+    const k = frame - splatImpact(i);
+    if (k >= 0 && k < 5) amp += 4 * Math.exp(-k * 0.7);
+  });
+  if (amp < 0.05) return {x: 0, y: 0, r: 0, s: 1};
+  const x = amp * (random(`sx${frame}`) * 2 - 1);
+  const y = amp * (random(`sy${frame}`) * 2 - 1) + kick * 10;
+  const r = amp * 0.035 * (random(`sr${frame}`) * 2 - 1);
   return {x, y, r, s: 1 + (amp * 2.4) / 1080 + kick * 0.012};
+};
+
+// The hero camera: push in on stamp 0 as the dots land, creep while «مش» smears off, whip back out.
+const PUSH = 1.3;
+const FOCUS = {x: STAMPS[0].x + 60, y: STAMPS[0].y - 30}; // a touch right: «مش» and the bead are the subject
+const TARGET = {x: W / 2, y: 930};
+const camAt = (f: number) => {
+  let a = 0;
+  let creep = 0;
+  let blur = 0;
+  if (f >= P.push.from && f < P.whip.from) {
+    a = interpolate(f, [P.push.from, P.push.to], [0, 1], {...clamp, easing: Easing.bezier(0.25, 0.9, 0.3, 1)});
+    creep = interpolate(f, [P.push.to, P.whip.from], [0, 0.045], clamp);
+  } else if (f >= P.whip.from && f < P.whip.to) {
+    const u = (f - P.whip.from) / (P.whip.to - P.whip.from);
+    a = 1 - Easing.inOut(Easing.poly(5))(u);
+    creep = 0.045 * (1 - u);
+    blur = 7 * Math.sin(Math.PI * u);
+  }
+  // the all-«قشطة» hold: a small camera punch on each synced bounce
+  const beat = P.holdBounce.reduce((acc, b, j) => {
+    const t = f - b;
+    return acc + (t >= 0 ? (j ? 0.018 : 0.03) * Math.sin(t * 0.8) * Math.exp(-t * 0.3) : 0);
+  }, 0);
+  const s = (1 + (PUSH - 1) * a) * (1 + creep) * (1 + beat);
+  return {s, tx: (TARGET.x - FOCUS.x) * a, ty: (TARGET.y - FOCUS.y) * a, rot: 2 * a, blur};
+};
+
+// How much of the day has turned «قشطة» (0..1): the red wash and the dim calm down with every stamp.
+const calmAt = (f: number) =>
+  T.erase.reduce((acc, e, i) => acc + interpolate(f, [e + (i ? 4 : 14), e + (i ? 10 : 22)], [0, 1 / N_STAMPS], clamp), 0);
+
+const redAt = (f: number) => {
+  if (f < T.act1End) return interpolate(f, [P.chaos.from - 2, T.act1End - 1], [0, 1], clamp);
+  return Math.max(0, 1 - 0.85 * calmAt(f) - 0.15 * interpolate(f, [T.holdQashta, T.holdQashta + 14], [0, 1], clamp));
+};
+const dimAt = (f: number) => {
+  const freeze = interpolate(f, [T.act1End, T.act1End + 3], [0, 0.4], clamp);
+  return freeze * (1 - calmAt(f)) * (1 - interpolate(f, [T.holdQashta, T.holdQashta + 14], [0, 1], clamp));
 };
 
 // On the cymbal a streak of light runs across the glass — the first hint that the glass itself matters.
@@ -55,11 +104,22 @@ const GlassGlint: React.FC<{frame: number}> = ({frame}) => {
 
 const Stage: React.FC<{frame: number}> = ({frame}) => {
   const sh = shakeAt(frame);
-  const red = frame >= P.chaos.from - 2 && frame < T.act1End ? interpolate(frame, [P.chaos.from - 2, T.act1End - 1], [0.05, 1], clamp) : 0;
-  const redPulse = red * (0.85 + 0.15 * Math.sin(frame * 1.7));
+  const cam = camAt(frame);
+  const red = redAt(frame);
+  const redPulse = red * (frame < T.act1End ? 0.85 + 0.15 * Math.sin(frozen(frame) * 1.7) : 0.85 + 0.15 * Math.sin(T.act1End * 1.7));
+  const dim = dimAt(frame);
   return (
     <div style={{position: 'absolute', width: W, height: H, overflow: 'hidden', background: '#000'}}>
-      <div style={{position: 'absolute', width: W, height: H, transform: `translate(${sh.x}px, ${sh.y}px) rotate(${sh.r}deg) scale(${sh.s})`}}>
+      <div
+        style={{
+          position: 'absolute',
+          width: W,
+          height: H,
+          transformOrigin: `${FOCUS.x}px ${FOCUS.y}px`,
+          transform: `translate(${cam.tx + sh.x}px, ${cam.ty + sh.y}px) rotate(${cam.rot + sh.r}deg) scale(${cam.s * sh.s})`,
+          filter: cam.blur > 0.3 ? `blur(${cam.blur.toFixed(2)}px)` : undefined,
+        }}
+      >
         <Screens frame={frame} />
         {red > 0 ? (
           <>
@@ -74,11 +134,13 @@ const Stage: React.FC<{frame: number}> = ({frame}) => {
             />
           </>
         ) : null}
+        {dim > 0 ? <div style={{position: 'absolute', inset: 0, background: '#000', opacity: dim}} /> : null}
+        <OrderBanner frame={frame} />
         <GlassGlint frame={frame} />
         <svg width={W} height={H} style={{position: 'absolute', inset: 0, overflow: 'visible'}}>
           <StampFilters />
           <CreamDefs />
-          {[0, 1, 2, 3].map((i) => (
+          {STAMPS.map((_, i) => (
             <Stamp key={i} i={i} frame={frame} />
           ))}
           <GlassCream frame={frame} />
@@ -100,8 +162,8 @@ export const PhoneStory: React.FC = () => {
   );
 };
 
-// Overlay for the start of the cup shot: the solid cream drains down the glass with drippy, glossy
-// edges to uncover whatever is underneath. Starts fully cream at its frame 0 (= T.cupShot).
+// Overlay for the start of the cup shot: the cream sheet slides off the glass downwards to uncover
+// whatever is underneath. Its frame 0 (= T.cupShot) matches PhoneStory's last frames exactly.
 export const CreamReveal: React.FC = () => {
   const r = useCurrentFrame();
   const {width} = useVideoConfig();
@@ -109,22 +171,29 @@ export const CreamReveal: React.FC = () => {
   return (
     <AbsoluteFill style={{overflow: 'hidden', pointerEvents: 'none'}}>
       <svg width={W} height={H} style={{position: 'absolute', left: 0, top: 0, transform: `scale(${width / W})`, transformOrigin: '0 0', overflow: 'visible'}}>
+        <defs>
+          <CreamFilter id="q2-reveal" blur={10} soften={8} relief={8} shadow={0.35} />
+          <filter id="q2-reveal-sheen" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation={16} />
+          </filter>
+          <filter id="q2-reveal-hl" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation={1.6} />
+          </filter>
+          <linearGradient id="q2-reveal-film" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor={COLORS.cream} stopOpacity={0} />
+            <stop offset="1" stopColor={COLORS.cream} stopOpacity={0.5} />
+          </linearGradient>
+          {r > 0 ? (
+            <clipPath id="q2-reveal-clip">
+              <RevealShape r={r} />
+            </clipPath>
+          ) : null}
+        </defs>
         {r === 0 ? (
-          <rect x={-10} y={-10} width={W + 20} height={H + 20} fill={COLORS.cream} />
+          <CreamSheet t={2} blurId="q2-reveal-sheen" />
         ) : (
           <>
-            <defs>
-              <CreamFilter id="q2-reveal" blur={10} soften={8} relief={8} shadow={0.35} />
-              <filter id="q2-reveal-sheen" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation={16} />
-              </filter>
-              <filter id="q2-reveal-hl" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation={1.6} />
-              </filter>
-              <clipPath id="q2-reveal-clip">
-                <RevealShape r={r} />
-              </clipPath>
-            </defs>
+            <RevealFilm r={r} />
             <g filter="url(#q2-reveal)">
               <RevealShape r={r} />
             </g>
@@ -137,3 +206,4 @@ export const CreamReveal: React.FC = () => {
     </AbsoluteFill>
   );
 };
+

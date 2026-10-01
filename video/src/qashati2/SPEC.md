@@ -40,8 +40,19 @@ no gloss/viscosity, no human truth, no humour. Everyone in the category shows ho
 | Part | Files | Output |
 |---|---|---|
 | Phone story (Acts 1–2) | `video/src/qashati2/phone/*.tsx`, exports `PhoneStory` (renders frames 0 → T.cupShot incl. the flood transition) | own test entry `video/src/qashati2/phone/index.ts`, comp `PhoneStoryTest` |
-| 3D cup shot | `motion/qashati/cup3d.py`, `motion/qashati/render_cup.sh` | `video/public/qashati2/cup-shot.mp4` (1080x1920, 30 fps, exactly 150 frames = 5 s, h264 CRF ≤ 16, yuv420p) |
-| Sound | `video/src/qashati2/audio/make_sound.py` | `video/public/qashati2/audio/mish-qashta.mp3` (18.0 s, 48 kHz stereo, −14 LUFS, TP ≤ −1) |
-| Assembly | `video/src/qashati2/MishQashta.tsx`, `compositions.tsx`, `index.ts` | comp `MishQashta` |
+| 3D cup shot | `motion/qashati/cup3d.py`, `motion/qashati/render_cup.sh` | `video/public/qashati2/cup-shot.mp4` (1080x1920, 30 fps, exactly 120 frames = 4 s, bt709) + `cup-packshot.png` (transparent, for the end card) |
+| Sound | `video/src/qashati2/audio/make_sound.py` (reads spec.ts, phone/timeline.ts, endcard/layout.ts at run time — re-run after picture lock) | `video/public/qashati2/audio/mish-qashta.mp3` + master `out/qashati2/mish-qashta.wav` (17.0 s, −14 LUFS, TP ≤ −1) |
+| Assembly, title stamp, end card | `video/src/qashati2/MishQashta.tsx`, `endcard/**`, `compositions.tsx`, `index.ts` | comp `MishQashta` |
 
-Render: `cd video && npx remotion render src/qashati2/index.ts MishQashta out/qashati2/render.mp4`
+Render + deliver (v2):
+```bash
+python3 video/src/qashati2/audio/make_sound.py                 # after any timing change
+cd video && npx remotion render src/qashati2/index.ts MishQashta out/qashati2/render.mp4 --crf=14
+bash src/qashati2/deliver.sh out/qashati2/render.mp4 out/qashati2/mish-qashta.wav out/qashati2/mish-qashta-v2.mp4
+```
+`deliver.sh` converts Remotion's full-range BT.601 output to BT.709 limited (v1 shifted the turquoise to cyan) and muxes
+the WAV master (Remotion's own AAC carries a ~43 ms priming lag). Never post the raw render.
+
+v2 changes come from the 4-lens review panel on v1 (`out/qashati2/review-panel/panel.json`): hook stamp on frame 0,
+accelerating Act 1 + burst, true silence before the order, hero erase with push-in + hold, spoon scoop and merged drops in
+the 3D shot, «خلّيها قشطة.» as a stamp, end card with packshot + teal logo + Talabat-first CTA + comment prompt.

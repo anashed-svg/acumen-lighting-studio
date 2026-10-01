@@ -147,7 +147,9 @@ export const ChatHeader: React.FC<{
       left: 0,
       width: 1080,
       height: 300,
-      background: 'rgba(21,25,30,0.96)',
+      background: 'rgba(21,25,30,0.9)',
+      // translucent bar: what scrolls under it is blurred (no readable ghost text behind the title)
+      backdropFilter: 'blur(26px) saturate(1.3)',
       borderBottom: `1.5px solid ${UIC.darkSep}`,
       fontFamily: UI_FONT,
       direction: 'rtl',
