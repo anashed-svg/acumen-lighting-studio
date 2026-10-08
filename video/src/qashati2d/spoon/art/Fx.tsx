@@ -19,7 +19,7 @@ export const DigSplash: React.FC<{x: number; y: number; at: number; frame: numbe
   });
   const t = (k + 1) / 5;
   return (
-    <svg width={0} height={0} style={{position: 'absolute', left: x, top: y, overflow: 'visible'}}>
+    <svg width={1} height={1} style={{position: 'absolute', left: x, top: y, overflow: 'visible'}}>
       {parts.map((p, i) => {
         const d = p.sp * (1 - (1 - t) ** 2) * 2.2;
         const px = Math.cos(p.a) * d;
@@ -65,7 +65,7 @@ export const SpeedLines: React.FC<{x: number; y: number; dir: Pt; len: number; s
   const nx = -dir[1];
   const ny = dir[0];
   return (
-    <svg width={0} height={0} style={{position: 'absolute', left: x, top: y, overflow: 'visible'}}>
+    <svg width={1} height={1} style={{position: 'absolute', left: x, top: y, overflow: 'visible'}}>
       {Array.from({length: n}).map((_, i) => {
         const o = (i / Math.max(1, n - 1) - 0.5) * 2 * spread + (r() - 0.5) * 12;
         const l = len * (0.55 + r() * 0.45);

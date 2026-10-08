@@ -128,31 +128,73 @@ export const BloomEdge: React.FC<{pts: Pt[]; w: number}> = ({pts, w}) => (
   </g>
 );
 
-/** the wave's crest: a thick band of glossy qashta riding the turquoise front, inked, with foam beads */
+/** the qashta wave's FRONT (world px): not an iris circle — a lumpy liquid wash racing out of the ق, with a few
+ *  tongues that run ahead (a breaking, splashing edge). Periodic by construction (integer harmonics) and redrawn on
+ *  twos (the small ripples change phase each drawing). Shared by the red clip and the crest so they always match. */
+const TONGUES: {a: number; g: number; p: number}[] = [
+  {a: -2.75, g: 1.0, p: 18},
+  {a: -1.95, g: 0.7, p: 26},
+  {a: -1.2, g: 0.85, p: 20},
+  {a: -0.35, g: 0.6, p: 28},
+  {a: 0.55, g: 1.0, p: 16},
+  {a: 1.35, g: 0.75, p: 24},
+  {a: 2.05, g: 0.95, p: 18},
+  {a: 2.8, g: 0.65, p: 26},
+];
+export const wavePts = (c: Pt, r: number, frame: number, n = 160): Pt[] => {
+  const f2 = Math.floor(frame / 2);
+  const ph = (f2 % 3) * 2.1;
+  // tongues lead the front by up to ~15% of the radius (capped), the slow lobes give it a hand-cut, uneven belly
+  const lead = Math.min(0.15 * r, 210);
+  const out: Pt[] = [];
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 - Math.PI;
+    let k = 0.045 * Math.sin(3 * a + 0.7) + 0.03 * Math.sin(5 * a + 2.1) + 0.012 * Math.sin(11 * a + ph) + 0.008 * Math.sin(19 * a - ph * 1.3);
+    let t = 0;
+    for (const T of TONGUES) t += T.g * Math.max(0, Math.cos(a - T.a)) ** T.p;
+    const rr = Math.max(0, r * (1 + k) + lead * Math.min(1.2, t));
+    out.push([c[0] + rr * Math.cos(a), c[1] + rr * Math.sin(a)]);
+  }
+  return out;
+};
+
+/** the wave's crest: a thick band of glossy qashta riding the turquoise front, inked, with foam beads and a few
+ *  droplets flung off the tongue tips */
 export const WaveCrest: React.FC<{c: Pt; r: number; frame: number; w: number}> = ({c, r, frame, w}) => {
   const f2 = Math.floor(frame / 2);
-  const outer = spreadPts(c, r, frame, 41, 0.06);
-  const mid = spreadPts(c, r - w * 0.45, frame, 41, 0.06);
-  const inner = spreadPts(c, r - w * 0.9, frame, 41, 0.06);
+  const band = (d: number) => wavePts(c, r - w * d, frame);
+  const outer = band(0);
+  const mid = band(0.45);
+  const inner = band(0.9);
   const rr = rng(300 + f2);
   const beads = outer
-    .filter((_, i) => i % 3 === f2 % 3)
+    .filter((_, i) => i % 4 === f2 % 4)
     .map(([x, y]) => {
       const dx = x - c[0];
       const dy = y - c[1];
       const L = Math.hypot(dx, dy) || 1;
-      const off = w * (0.15 + rr() * 0.25);
-      return {x: x + (dx / L) * off, y: y + (dy / L) * off, r: w * (0.12 + rr() * 0.12)};
+      const off = w * (0.15 + rr() * 0.3);
+      return {x: x + (dx / L) * off, y: y + (dy / L) * off, r: w * (0.1 + rr() * 0.12)};
     });
+  // droplets thrown ahead of each tongue (they lead the front by 0.4–1.1 w, on twos)
+  const lead = Math.min(0.15 * r, 210);
+  const flung = TONGUES.flatMap((T, j) => {
+    const rj = rng(700 + j * 13 + (f2 % 3));
+    return [0, 1].map((m) => {
+      const a = T.a + (rj() - 0.5) * 0.12;
+      const d = r + lead * T.g * 0.95 + w * (0.5 + 0.7 * rj() + m * 0.6);
+      return {x: c[0] + d * Math.cos(a), y: c[1] + d * Math.sin(a), r: w * (0.16 - m * 0.05) * (0.8 + 0.4 * rj())};
+    });
+  });
   return (
     <g>
       {/* turquoise light just behind the crest (the wet front) */}
       <path d={ptsToPath(outer) + ptsToPath(inner.slice().reverse())} fill={C.turquoiseLight} fillRule="evenodd" opacity={0.9} />
       <path d={brush(mid, {w: w * 0.8, closed: true, dense: true, seed: 42, jitter: 0.35, jitterLen: 60})} fill={C.cream} />
-      <path d={brush(spreadPts(c, r - w * 0.62, frame, 41, 0.06), {w: w * 0.18, closed: true, dense: true, seed: 43, jitter: 0.6, jitterLen: 35})} fill={C.creamShade} />
-      <path d={brush(spreadPts(c, r - w * 0.3, frame, 41, 0.06), {w: w * 0.14, closed: true, dense: true, seed: 44, jitter: 0.9, jitterLen: 25})} fill={C.white} />
-      <path d={brush(spreadPts(c, r - w * 0.04, frame, 41, 0.06), {w: w * 0.16, closed: true, dense: true, seed: 45, jitter: 0.5, jitterLen: 40})} fill={C.teal} />
-      {beads.map((b, i) => (
+      <path d={brush(band(0.62), {w: w * 0.2, closed: true, dense: true, seed: 43, jitter: 0.6, jitterLen: 35})} fill={C.creamShade} />
+      <path d={brush(band(0.3), {w: w * 0.14, closed: true, dense: true, seed: 44, jitter: 0.9, jitterLen: 25})} fill={C.white} />
+      <path d={brush(band(0.04), {w: w * 0.16, closed: true, dense: true, seed: 45, jitter: 0.5, jitterLen: 40})} fill={C.teal} />
+      {[...beads, ...flung].map((b, i) => (
         <g key={i}>
           <circle cx={b.x} cy={b.y} r={b.r} fill={C.cream} stroke={C.teal} strokeWidth={Math.max(2, w * 0.05)} />
           <circle cx={b.x - b.r * 0.3} cy={b.y - b.r * 0.3} r={b.r * 0.3} fill={C.white} />

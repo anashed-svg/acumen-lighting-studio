@@ -66,6 +66,34 @@ export const VectorLine: React.FC<{
     const xs = gs.flatMap((g) => [g.x + GLYPHS[g.g].bbox[0], g.x + GLYPHS[g.g].bbox[2]]);
     return {x0: Math.min(...xs), x1: Math.max(...xs)};
   });
+  // strike-through scribble (a quick zig-zag of ink across the word), drawn on as `strike` goes 0 → 1
+  let scribble: string | null = null;
+  if (strike > 0 && boxes[strikeWord]) {
+    const b = boxes[strikeWord];
+    const xa = x0 + b.x1 * k + 18;
+    const xb = x0 + b.x0 * k - 18;
+    const r = rng(77);
+    const pts: Pt[] = [];
+    // a fast, angry back-and-forth scribble (a real pen cancelling a word), then one long slash across it
+    const n = 9;
+    for (let i = 0; i <= n; i++) {
+      const t = i / n;
+      pts.push([xa + (xb - xa) * t + (r() - 0.5) * 24, baseline - 280 * k + (i % 2 ? -150 : 130) * k + (r() - 0.5) * 40 * k]);
+    }
+    const m = Math.max(2, Math.ceil(strike * pts.length));
+    scribble = brush(pts.slice(0, m), {w: 34 * k * 3, taper: [0.06, 0.15], tip: 0.35, seed: 12, jitter: 0.25});
+    if (strike >= 1) {
+      scribble += brush(
+        [
+          [xa + 20, baseline - 420 * k],
+          [(xa + xb) / 2, baseline - 260 * k],
+          [xb - 20, baseline - 90 * k],
+        ],
+        {w: 40 * k * 3, taper: [0.05, 0.3], tip: 0.3, seed: 13},
+      );
+    }
+  }
+
   const wordEls = (layer: 'plate' | 'ink') =>
     Array.from({length: nWords}).map((_, w) => {
       const A = words[w] ?? {start: 0};
@@ -133,26 +161,10 @@ export const VectorLine: React.FC<{
                   );
                 })
             : null}
+          {layer === 'ink' && w === strikeWord && scribble ? <path d={scribble} fill={C.chili} /> : null}
         </g>
       );
     });
-
-  // strike-through scribble (a quick zig-zag of ink across the word), drawn on as `strike` goes 0 → 1
-  let scribble: string | null = null;
-  if (strike > 0 && boxes[strikeWord]) {
-    const b = boxes[strikeWord];
-    const xa = x0 + b.x1 * k + 18;
-    const xb = x0 + b.x0 * k - 18;
-    const r = rng(77);
-    const pts: Pt[] = [];
-    const n = 7;
-    for (let i = 0; i <= n; i++) {
-      const t = i / n;
-      pts.push([xa + (xb - xa) * t + (r() - 0.5) * 20, baseline - 300 * k + (i % 2 ? -90 : 90) * k + (r() - 0.5) * 30 * k]);
-    }
-    const m = Math.max(2, Math.ceil(strike * pts.length));
-    scribble = brush(pts.slice(0, m), {w: 26 * k * 3, taper: [0.08, 0.2], tip: 0.3, seed: 12});
-  }
 
   return (
     <svg width={1080} height={1920} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
@@ -168,7 +180,6 @@ export const VectorLine: React.FC<{
         <g filter={bInk.url}>
           <g filter={`url(#vt${uid})`}>{wordEls('ink')}</g>
         </g>
-        {scribble ? <path d={scribble} fill={C.chili} filter={bInk.url} /> : null}
       </g>
     </svg>
   );

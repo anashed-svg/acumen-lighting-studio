@@ -177,7 +177,6 @@ export const QafWord: React.FC<QafWordProps> = ({
     </g>
   );
 
-  const qafCentreWorld: Pt = [px + (qaf.dx ?? 0), py + (qaf.dy ?? 0)];
   return (
     <svg width={1080} height={1920} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
       <defs>
@@ -204,7 +203,7 @@ export const QafWord: React.FC<QafWordProps> = ({
           </g>
         ) : null}
         {dropsFree ? dropEls : null}
-        <Sparks at={[qafCentreWorld[0] + 30, qafCentreWorld[1] + 40]} t={sparks} seed={7 + f2} size={150 * k * 3} />
+        <Sparks at={[px + 40, py + 60]} t={sparks} seed={7 + f2} size={150 * k * 3} />
       </g>
     </svg>
   );

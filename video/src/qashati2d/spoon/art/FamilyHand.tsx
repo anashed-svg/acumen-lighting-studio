@@ -9,6 +9,8 @@ import React, {useId, useMemo} from 'react';
 import {useCurrentFrame} from 'remotion';
 import {blobPts, brush, C, catmull, CreamDropArt, ellipsePts, FruitPiece, INK, Pt, rng, shapeD, smoothD, SpoonArt, useBoil} from '../../kit/lib';
 import type {Garnish} from '../spec';
+import {QashtaDollop} from './Ending';
+import {HeapArt} from './Heap';
 
 type SleevePattern = 'none' | 'stripes' | 'dots' | 'spikes' | 'knit' | 'sheen';
 type Accessory = 'watch' | 'bracelets' | 'misbaha' | 'henna' | 'ring';
@@ -28,6 +30,12 @@ export type FamilyHandProps = {
   load?: number;
   /** what sits on top of the heaped load */
   garnish?: Garnish;
+  /** the HEAP this "one spoon" carries (HeapArt size; 0 = the kit's small dollop driven by `load`). With a heap,
+   *  `load` 0..1 is how far it has grown (the scoop) */
+  heap?: number;
+  heapSeed?: number;
+  /** jelly wobble of the heap (-1..1) when the hand jerks */
+  heapWobble?: number;
   /** a thin cream coat on the (empty) spoon after a dip, 0..1 */
   coat?: number;
   /** shadow mode: draw only the silhouette (sleeve + hand + spoon) in this colour — no ink, no boil */
@@ -266,6 +274,7 @@ const Spikes: React.FC<{color: string}> = ({color}) => {
 };
 
 // ------------------------------------------------------------------------------------------------ garnish
+const GARNISH_FRUIT: Record<Garnish, 'strawberryCut' | 'mango' | 'kiwi'> = {strawberry: 'strawberryCut', mango: 'mango', kiwi: 'kiwi', drop: 'strawberryCut', none: 'strawberryCut'};
 const GARNISH_ROT: Record<Garnish, number> = {strawberry: -30, mango: 18, kiwi: 40, drop: 160, none: 0};
 const GarnishArt: React.FC<{kind: Garnish; load: number}> = ({kind, load}) => {
   if (kind === 'none' || load < 0.55) return null;
@@ -306,6 +315,9 @@ export const FamilyHand: React.FC<FamilyHandProps> = ({
   spoon = true,
   load = 0,
   garnish = 'none',
+  heap = 0,
+  heapSeed = 1,
+  heapWobble = 0,
   coat = 0,
   silhouette,
   left = false,
@@ -330,6 +342,11 @@ export const FamilyHand: React.FC<FamilyHandProps> = ({
       <svg width={2 * R * scale} height={2 * R * scale} viewBox={`${-R} ${-R} ${2 * R} ${2 * R}`} style={svgStyle}>
         <g transform={`rotate(${angle}) scale(${left ? -1 : 1} 1) translate(0 ${-SHIFT})`} fill={silhouette}>
           {spoon ? <path d={SPOON_SIL} transform={SPOON_T} /> : null}
+          {spoon && heap > 0 && load > 0.01 ? (
+            <g transform={`translate(0 ${SHIFT - 12 * heap}) rotate(${-angle})`}>
+              <HeapArt size={heap} seed={heapSeed} grow={load} frame={f} silhouette={silhouette} />
+            </g>
+          ) : null}
           <path d={G.sleeve} />
           <path d={G.back} />
           <path d={G.thumb} />
@@ -353,9 +370,21 @@ export const FamilyHand: React.FC<FamilyHandProps> = ({
         {spoon ? (
           <g transform={SPOON_T}>
             <g transform="rotate(180)">
-              <SpoonArt load={load} coat={coat} frame={f} boil={boil} />
+              <SpoonArt load={heap > 0 ? 0 : load} coat={coat} frame={f} boil={boil} />
             </g>
-            <GarnishArt kind={garnish} load={load} />
+            {heap > 0 || garnish === 'drop' ? null : <GarnishArt kind={garnish} load={load} />}
+          </g>
+        ) : null}
+        {spoon && garnish === 'drop' && load > 0.01 ? (
+          // the last dollop, stolen (screen-oriented light like everything else)
+          <g transform={`translate(0 ${SHIFT - 4}) rotate(${-angle}) scale(${Math.min(1, load)})`}>
+            <QashtaDollop r={40} wobble={heapWobble} />
+          </g>
+        ) : null}
+        {spoon && heap > 0 && load > 0.01 ? (
+          // the heap overhangs the bowl's tip; counter-rotated so its light stays upper-left on screen
+          <g transform={`translate(0 ${SHIFT - 12 * heap}) rotate(${-angle})`}>
+            <HeapArt size={heap} seed={heapSeed} first={GARNISH_FRUIT[garnish]} grow={load} frame={f} wobble={heapWobble} />
           </g>
         ) : null}
         <g filter={bSleeve.url}>

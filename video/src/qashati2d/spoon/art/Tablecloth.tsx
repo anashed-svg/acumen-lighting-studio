@@ -79,9 +79,9 @@ export const Tablecloth: React.FC = () => {
     <svg width={CW} height={CH} viewBox={`${X0} ${Y0} ${CW} ${CH}`} style={{position: 'absolute', left: X0, top: Y0, overflow: 'visible'}}>
       <rect x={X0} y={Y0} width={CW} height={CH} fill="#F2E3C4" />
       {/* the block-print inks: colour plate a hair off the key plate (printed by hand) */}
-      <path d={A.petals} fill="#86BFB0" opacity={0.36} />
+      <path d={A.petals} fill="#86BFB0" opacity={0.3} />
       <path d={A.petals} fill="#3E8E80" opacity={0.14} transform="translate(-3 -2)" />
-      <path d={A.centres} fill="#D9645A" opacity={0.42} />
+      <path d={A.centres} fill="#D9645A" opacity={0.36} />
       <path d={A.dots} fill="#C9A86E" opacity={0.55} />
       <path d={A.stitch} fill="#C9A86E" opacity={0.6} />
       <path d={A.creaseLight} fill={C.white} opacity={0.32} />
